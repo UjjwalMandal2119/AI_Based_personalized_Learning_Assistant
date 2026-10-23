@@ -3,7 +3,7 @@ import { DatePipe, LowerCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LearningGoal, StudyTask, TaskType } from '../core/models';
+import { LearningGoal, LearningLesson, StudyTask, TaskType } from '../core/models';
 import { LearningService } from '../core/learning.service';
 import { ErrorMessageComponent } from '../shared/error-message';
 import { LoadingStateComponent } from '../shared/loading-state';
@@ -37,6 +37,36 @@ import { TaskItemComponent } from '../shared/task-item';
           </div>
         </section>
         @if (error) { <app-error-message [message]="error" /> }
+
+        <section class="form-card compact-card lesson-create">
+          <p class="eyebrow">Personalized study material</p>
+          <div class="lesson-action-row">
+            <div>
+              <h2>Learn about {{ currentGoal.topic }}</h2>
+              <p class="muted">A lesson tailored to your {{ currentGoal.proficiencyLevel | lowercase }} level.</p>
+            </div>
+            <button class="button button-primary" type="button" [disabled]="generatingLesson"
+                    (click)="generateLesson()" [attr.aria-busy]="generatingLesson">
+              {{ generatingLesson ? 'Generating lesson…' : '✦ Generate study material' }}
+            </button>
+          </div>
+          @if (generatingLesson) {
+            <p class="lesson-loading" role="status">Creating a lesson for your learning goal. This may take a few moments…</p>
+          }
+          @if (lessonError) { <app-error-message [message]="lessonError" /> }
+          @if (loadingLessons) { <p class="muted">Loading saved lessons…</p> }
+          @if (lessons.length) {
+            <div class="saved-lessons">
+              <h3>Saved lessons</h3>
+              @for (lesson of lessons; track lesson.id) {
+                <a class="saved-lesson-row" [routerLink]="['/lessons', lesson.id]">
+                  <span><strong>{{ lesson.title }}</strong><small>{{ lesson.estimatedStudyMinutes }} min · {{ lesson.createdAt | date:'mediumDate' }}</small></span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              }
+            </div>
+          }
+        </section>
 
         @if (editing) {
           <section class="form-card compact-card">
@@ -136,6 +166,10 @@ export class GoalDetailPage implements OnInit {
   loading = true;
   savingGoal = false;
   savingTask = false;
+  generatingLesson = false;
+  loadingLessons = true;
+  lessons: LearningLesson[] = [];
+  lessonError = '';
   editing = false;
   error = '';
   private goalId = '';
@@ -160,6 +194,7 @@ export class GoalDetailPage implements OnInit {
           proficiencyLevel: goal.proficiencyLevel, targetDate: goal.targetDate ?? '', status: goal.status,
         });
         this.loadTasks();
+        this.loadLessons();
       },
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'This learning goal could not be found.';
@@ -175,6 +210,35 @@ export class GoalDetailPage implements OnInit {
         this.error = error.error?.detail ?? 'Study tasks could not be loaded.';
       },
       complete: () => { this.loading = false; },
+    });
+  }
+
+  private loadLessons(): void {
+    this.loadingLessons = true;
+    this.learning.lessons(this.goalId).subscribe({
+      next: (lessons) => { this.lessons = lessons; },
+      error: (error: HttpErrorResponse) => {
+        this.lessonError = error.error?.detail ?? 'Saved lessons could not be loaded.';
+        this.loadingLessons = false;
+      },
+      complete: () => { this.loadingLessons = false; },
+    });
+  }
+
+  generateLesson(): void {
+    if (this.generatingLesson) return;
+    this.generatingLesson = true;
+    this.lessonError = '';
+    this.learning.generateLesson(this.goalId).subscribe({
+      next: (lesson) => {
+        this.lessons = [lesson, ...this.lessons];
+        void this.router.navigate(['/lessons', lesson.id]);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.lessonError = error.error?.detail ?? 'The lesson could not be generated. Please try again.';
+        this.generatingLesson = false;
+      },
+      complete: () => { this.generatingLesson = false; },
     });
   }
 

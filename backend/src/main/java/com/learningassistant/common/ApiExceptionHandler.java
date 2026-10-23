@@ -1,5 +1,6 @@
 package com.learningassistant.common;
 
+import com.learningassistant.lesson.LessonGenerationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     ProblemDetail handleConflict(ConflictException exception) {
         return problem(HttpStatus.CONFLICT, exception.getMessage());
+    }
+
+    @ExceptionHandler(LessonGenerationException.class)
+    ResponseEntity<ProblemDetail> handleLessonGeneration(LessonGenerationException exception) {
+        return ResponseEntity.status(exception.getStatus())
+                .body(problem(exception.getStatus(), exception.getMessage()));
     }
 
     @ExceptionHandler(AuthenticationException.class)

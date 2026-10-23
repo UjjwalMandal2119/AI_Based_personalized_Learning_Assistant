@@ -7,6 +7,7 @@ export const routes: Routes = [
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./pages/dashboard-page').then((module) => module.DashboardPage) },
   { path: 'goals/new', canActivate: [authGuard], loadComponent: () => import('./pages/goal-form-page').then((module) => module.GoalFormPage) },
   { path: 'goals/:goalId', canActivate: [authGuard], loadComponent: () => import('./pages/goal-detail-page').then((module) => module.GoalDetailPage) },
+  { path: 'lessons/:lessonId', canActivate: [authGuard], loadComponent: () => import('./pages/lesson-page').then((module) => module.LessonPage) },
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: '**', redirectTo: 'dashboard' },
 ];

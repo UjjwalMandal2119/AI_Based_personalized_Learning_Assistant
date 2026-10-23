@@ -14,3 +14,6 @@ spring:
 app:
   jwt:
     secret: VGhpc0lzQVRlc3RTZWNyZXRLZXlGb3JKV1RUb2tlbkV4YW1wbGUxMjM0NTY=
+gemini:
+  api-key: test-api-key
+  model: gemini-3.8-flash

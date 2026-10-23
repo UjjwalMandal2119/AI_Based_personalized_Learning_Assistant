@@ -22,6 +22,11 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-3.8-flash}
+  connect-timeout: ${GEMINI_CONNECT_TIMEOUT:5s}
+  response-timeout: ${GEMINI_RESPONSE_TIMEOUT:60s}
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

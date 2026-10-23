@@ -61,3 +61,33 @@ export interface Dashboard {
   upcomingTasks: StudyTask[];
   recentActivity: StudyTask[];
 }
+
+export interface LessonSection {
+  heading: string;
+  explanation: string;
+}
+
+export interface LessonExample {
+  title: string;
+  scenario: string;
+  solution: string;
+}
+
+export interface LessonContent {
+  learningObjectives: string[];
+  sections: LessonSection[];
+  examples: LessonExample[];
+  keyTakeaways: string[];
+}
+
+export interface LearningLesson {
+  id: string;
+  learningGoalId: string;
+  studentId: string;
+  title: string;
+  topic: string;
+  difficulty: ProficiencyLevel;
+  content: LessonContent;
+  estimatedStudyMinutes: number;
+  createdAt: string;
+}

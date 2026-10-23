@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Dashboard, GoalRequest, LearningGoal, StudyTask, TaskRequest } from './models';
+import { Dashboard, GoalRequest, LearningGoal, LearningLesson, StudyTask, TaskRequest } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class LearningService {
@@ -39,5 +39,17 @@ export class LearningService {
 
   setTaskCompletion(taskId: string, completed: boolean) {
     return this.http.patch<StudyTask>(`${this.apiUrl}/tasks/${taskId}/completion`, { completed });
+  }
+
+  generateLesson(goalId: string) {
+    return this.http.post<LearningLesson>(`${this.apiUrl}/learning-goals/${goalId}/lessons/generate`, {});
+  }
+
+  lessons(goalId: string) {
+    return this.http.get<LearningLesson[]>(`${this.apiUrl}/learning-goals/${goalId}/lessons`);
+  }
+
+  lesson(id: string) {
+    return this.http.get<LearningLesson>(`${this.apiUrl}/lessons/${id}`);
   }
 }
