@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:learning_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+app:
+  jwt:
+    secret: VGhpc0lzQVRlc3RTZWNyZXRLZXlGb3JKV1RUb2tlbkV4YW1wbGUxMjM0NTY=
