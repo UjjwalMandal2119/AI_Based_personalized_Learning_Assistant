@@ -1,4 +1,4 @@
-# Lumen — AI-Based Personalized Learning Assistant
+# Disha AI — AI-Based Personalized Learning Assistant
 
 This project provides student registration/login, JWT-protected learning goals and study tasks, a personalized dashboard, and Gemini-generated lessons persisted in PostgreSQL.
 

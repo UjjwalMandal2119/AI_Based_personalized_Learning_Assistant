@@ -2,12 +2,12 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
+  { path: '', pathMatch: 'full', loadComponent: () => import('./pages/landing-page').then((module) => module.LandingPage) },
   { path: 'login', loadComponent: () => import('./pages/auth-page').then((module) => module.AuthPage), data: { mode: 'login' } },
   { path: 'register', loadComponent: () => import('./pages/auth-page').then((module) => module.AuthPage), data: { mode: 'register' } },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./pages/dashboard-page').then((module) => module.DashboardPage) },
   { path: 'goals/new', canActivate: [authGuard], loadComponent: () => import('./pages/goal-form-page').then((module) => module.GoalFormPage) },
   { path: 'goals/:goalId', canActivate: [authGuard], loadComponent: () => import('./pages/goal-detail-page').then((module) => module.GoalDetailPage) },
   { path: 'lessons/:lessonId', canActivate: [authGuard], loadComponent: () => import('./pages/lesson-page').then((module) => module.LessonPage) },
-  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-  { path: '**', redirectTo: 'dashboard' },
+  { path: '**', redirectTo: '' },
 ];

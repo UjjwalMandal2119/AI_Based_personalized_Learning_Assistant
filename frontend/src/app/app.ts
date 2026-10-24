@@ -9,7 +9,7 @@ import { AuthService } from './core/auth.service';
   template: `
     @if (auth.currentUser(); as user) {
       <header class="app-header">
-        <a class="brand" routerLink="/dashboard"><span class="brand-mark">L</span> Lumen</a>
+        <a class="brand" routerLink="/dashboard"><span class="brand-mark">D</span> Disha AI</a>
         <nav aria-label="Main navigation">
           <a routerLink="/dashboard" routerLinkActive="active-link">My learning</a>
           <a routerLink="/goals/new" routerLinkActive="active-link">New goal</a>

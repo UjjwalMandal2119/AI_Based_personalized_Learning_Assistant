@@ -11,7 +11,7 @@ import { ErrorMessageComponent } from '../shared/error-message';
   template: `
     <main class="auth-layout">
       <section class="auth-intro">
-        <a class="brand" routerLink="/login"><span class="brand-mark">L</span> Lumen</a>
+        <a class="brand" routerLink="/login"><span class="brand-mark">D</span> Disha AI</a>
         <div>
           <p class="eyebrow">A little progress, every day</p>
           <h1>Your learning journey, made personal.</h1>
@@ -50,7 +50,7 @@ import { ErrorMessageComponent } from '../shared/error-message';
             </button>
           </form>
           <p class="auth-switch">
-            {{ isRegister ? 'Already have an account?' : 'New to Lumen?' }}
+            {{ isRegister ? 'Already have an account?' : 'New to Disha AI?' }}
             <a [routerLink]="isRegister ? '/login' : '/register'">
               {{ isRegister ? 'Sign in' : 'Create an account' }}
             </a>
