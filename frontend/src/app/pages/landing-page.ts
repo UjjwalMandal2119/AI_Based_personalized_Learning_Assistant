@@ -8,7 +8,7 @@ import { AuthService } from '../core/auth.service';
   template: `
     @if (!auth.currentUser()) {
       <header class="landing-header">
-        <a class="brand" routerLink="/"><span class="brand-mark">D</span> Disha AI</a>
+        <a class="brand" routerLink="/" aria-label="Disha AI home"><span class="brand-mark">D</span> Disha AI</a>
         <nav aria-label="Main navigation">
           <a class="landing-nav-link" href="#how-it-works">How it works</a>
           <a class="landing-login" routerLink="/login">Sign in</a>
@@ -18,82 +18,139 @@ import { AuthService } from '../core/auth.service';
     }
 
     <main class="landing-page">
-      <section class="landing-hero">
+      <section class="landing-hero" aria-labelledby="landing-title">
         <div class="landing-copy">
-          <p class="eyebrow"><span class="landing-sparkle" aria-hidden="true">✦</span> YOUR CURIOSITY, WITH A PLAN</p>
-          <h1>Make learning feel like <span>your own.</span></h1>
+          <p class="eyebrow"><span class="landing-sparkle" aria-hidden="true">✦</span> YOUR PERSONAL AI LEARNING COACH</p>
+          <h1 id="landing-title">Turn your learning goals into a <span>plan you can follow.</span></h1>
           <p class="landing-description">
-            Turn the things you want to learn into a clear, personal study plan.
-            Take one small step at a time and see how far you go.
+            Choose what you want to learn. Get a structured daily plan, personalized lessons,
+            and targeted practice—with recommendations that show what to study next and how to improve.
           </p>
           <div class="landing-actions">
             <a class="button button-primary landing-primary-cta"
                [routerLink]="auth.currentUser() ? '/dashboard' : '/register'">
-              {{ auth.currentUser() ? 'Go to my learning' : 'Create my learning plan' }}
+              {{ auth.currentUser() ? 'Go to my learning' : 'Start learning' }}
               <span aria-hidden="true">→</span>
             </a>
-            @if (!auth.currentUser()) {
-              <a class="landing-secondary-cta" routerLink="/login">I already have an account</a>
-            }
+            <a class="landing-secondary-cta" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
           </div>
-          <div class="landing-note">
-            <span class="landing-note-icon" aria-hidden="true">✓</span>
-            <span>Set your own pace. Celebrate every bit of progress.</span>
-          </div>
+          <p class="landing-note"><span aria-hidden="true">✓</span> A clear next step for every study session.</p>
         </div>
 
-        <div class="landing-preview" aria-label="Preview of a personalized learning plan">
-          <div class="preview-orbit preview-orbit-one"></div>
-          <div class="preview-orbit preview-orbit-two"></div>
-          <article class="preview-card">
-            <div class="preview-topline">
+        <div class="landing-preview-wrap">
+          <article class="study-preview" aria-labelledby="preview-title">
+            <div class="preview-label"><span aria-hidden="true">✳</span> ILLUSTRATIVE PREVIEW</div>
+            <div class="preview-heading">
               <div>
-                <p class="preview-kicker">YOUR STUDY SPACE</p>
-                <h2>A little progress, daily.</h2>
+                <p class="preview-kicker">YOUR LEARNING PLAN</p>
+                <h2 id="preview-title">Learn Java Collections</h2>
               </div>
-              <span class="preview-avatar" aria-hidden="true">✦</span>
+              <span class="preview-subject-icon" aria-hidden="true">J</span>
             </div>
-            <div class="preview-goal">
-              <span class="preview-goal-icon" aria-hidden="true">∑</span>
-              <span><small>YOUR LEARNING GOAL</small><strong>Get comfortable with algebra</strong></span>
-              <span class="preview-arrow" aria-hidden="true">↗</span>
+
+            <div class="preview-progress">
+              <div class="preview-progress-copy"><span>Today’s progress</span><strong>2 of 4 tasks</strong></div>
+              <div class="preview-progress-track" role="progressbar" aria-label="Illustrative daily plan progress"
+                   aria-valuemin="0" aria-valuemax="4" aria-valuenow="2"><span></span></div>
             </div>
-            <div class="preview-focus">
-              <div class="preview-focus-heading">
-                <span>Today’s focus</span>
-                <span class="preview-time">15 min</span>
-              </div>
-              <div class="preview-task">
-                <span class="preview-checkbox" aria-hidden="true"></span>
-                <span><strong>Practice linear equations</strong><small>One concept · At your pace</small></span>
-              </div>
-              <div class="preview-progress">
-                <div><span>YOUR MOMENTUM</span><strong>Just getting started</strong></div>
-                <span class="preview-progress-mark" aria-hidden="true">↗</span>
-              </div>
+
+            <h3 class="preview-plan-title">TODAY’S PLAN</h3>
+            <ul class="preview-task-list">
+              <li class="preview-task is-done"><span class="preview-check" aria-hidden="true">✓</span><span>Review ArrayList</span><span class="preview-task-meta">Review</span></li>
+              <li class="preview-task is-done"><span class="preview-check" aria-hidden="true">✓</span><span>Learn HashMap</span><span class="preview-task-meta">Lesson</span></li>
+              <li class="preview-task"><span class="preview-check" aria-hidden="true"></span><span>Complete a short quiz</span><span class="preview-task-meta">Practice</span></li>
+              <li class="preview-task"><span class="preview-check" aria-hidden="true"></span><span>Revise incorrect answers</span><span class="preview-task-meta">Review</span></li>
+            </ul>
+
+            <div class="preview-recommendation">
+              <span class="recommendation-icon" aria-hidden="true">↗</span>
+              <div><strong>Your next step</strong><p>After the quiz, revisit any HashMap questions you found tricky.</p></div>
             </div>
-            <div class="preview-footer"><span>✧</span> Small steps add up.</div>
           </article>
-          <span class="preview-decoration preview-decoration-top" aria-hidden="true">✳</span>
-          <span class="preview-decoration preview-decoration-bottom" aria-hidden="true">✦</span>
+          <p class="preview-disclaimer">Example plan for illustration only.</p>
         </div>
       </section>
 
-      <section class="landing-benefits" id="how-it-works" aria-label="How Disha AI helps you learn">
-        <div class="landing-benefit">
-          <span class="benefit-number">01</span>
-          <div><h2>Start with what matters to you</h2><p>Choose a subject, set a goal, and make learning personal from day one.</p></div>
+      <section class="how-section landing-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="section-intro">
+          <p class="eyebrow">A PLAN THAT MOVES WITH YOU</p>
+          <h2 id="how-title">From “I want to learn” to “I know what’s next.”</h2>
+          <p>Turn a big goal into a learning routine that feels clear and manageable.</p>
         </div>
-        <div class="landing-benefit">
-          <span class="benefit-number">02</span>
-          <div><h2>Know your next small step</h2><p>Break a big ambition into manageable tasks you can fit into your day.</p></div>
+        <ol class="steps-list">
+          <li class="step-card">
+            <span class="step-icon" aria-hidden="true">◎</span>
+            <span class="step-number">STEP 01</span>
+            <h3>Set your goal</h3>
+            <p>Choose a topic, your current level, and what you want to achieve.</p>
+          </li>
+          <li class="step-card">
+            <span class="step-icon" aria-hidden="true">☷</span>
+            <span class="step-number">STEP 02</span>
+            <h3>Follow your learning plan</h3>
+            <p>Get AI-generated explanations, study material, and manageable daily tasks.</p>
+          </li>
+          <li class="step-card">
+            <span class="step-icon" aria-hidden="true">↗</span>
+            <span class="step-number">STEP 03</span>
+            <h3>Practice and improve</h3>
+            <p>Complete assignments, understand mistakes, and find a useful next step.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="features-section landing-section" aria-labelledby="features-title">
+        <div class="section-intro">
+          <p class="eyebrow">BUILT AROUND YOUR PROGRESS</p>
+          <h2 id="features-title">Everything you need to make progress</h2>
+          <p>One personal learning space to help you focus, practice, and keep moving forward.</p>
         </div>
-        <div class="landing-benefit">
-          <span class="benefit-number">03</span>
-          <div><h2>Keep your progress in sight</h2><p>See what you’ve completed, what’s next, and the momentum you’re building.</p></div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">✎</span>
+            <h3>Personalized study material</h3>
+            <p>Explore topics at your level with clear explanations and examples made for your goal.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">☷</span>
+            <h3>Daily learning plan</h3>
+            <p>Know what to study today and which manageable task to take on next.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">✓</span>
+            <h3>Practice and assignments</h3>
+            <p>Check your understanding with questions and exercises as you learn.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">⌕</span>
+            <h3>Weak-area insights</h3>
+            <p>Use your assessment results to spot concepts that could use another look.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">↗</span>
+            <h3>Adaptive recommendations</h3>
+            <p>Let your learning results guide what to review or practice in your next session.</p>
+          </article>
         </div>
       </section>
-      <footer class="landing-footer"><a class="brand" routerLink="/"><span class="brand-mark">D</span> Disha AI</a><span>Learning, one small step at a time.</span></footer>
+
+      <section class="landing-cta" aria-labelledby="cta-title">
+        <div>
+          <p class="eyebrow">YOUR NEXT STEP STARTS HERE</p>
+          <h2 id="cta-title">Your next learning goal starts here.</h2>
+          <p>Build your study plan, learn at your own pace, and keep improving.</p>
+        </div>
+        <a class="button button-primary landing-primary-cta"
+           [routerLink]="auth.currentUser() ? '/dashboard' : '/register'">
+          {{ auth.currentUser() ? 'Go to my learning' : 'Create your learning plan' }}
+          <span aria-hidden="true">→</span>
+        </a>
+      </section>
+
+      <footer class="landing-footer">
+        <a class="brand" routerLink="/" aria-label="Disha AI home"><span class="brand-mark">D</span> Disha AI</a>
+        <span>Learn smarter. Stay on track. Achieve your learning goals.</span>
+      </footer>
     </main>
   `,
 })

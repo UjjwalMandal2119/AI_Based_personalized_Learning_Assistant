@@ -116,3 +116,7 @@ npm run build
 ```
 
 Backend integration tests use an in-memory H2 database in PostgreSQL compatibility mode and mocked Gemini responses; production/local app persistence uses PostgreSQL. The CI workflow runs backend verification, frontend tests, and a production frontend build.
+
+## DevOps learning setup
+
+See [DEVOPS.md](./DEVOPS.md) for the AWS-oriented enterprise-style repository layout and a solo practice roadmap. The infrastructure and deployment directories are scaffolding only; no AWS resources are provisioned by this repository yet.
