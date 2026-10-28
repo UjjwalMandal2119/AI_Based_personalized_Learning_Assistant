@@ -14,7 +14,7 @@ import { TaskItemComponent } from '../shared/task-item';
   imports: [DatePipe, PercentPipe, RouterLink, DashboardCardComponent,
     ErrorMessageComponent, LoadingStateComponent, TaskItemComponent],
   template: `
-    <main class="page-shell">
+    <main class="page-shell" id="main-content">
       @if (loading) {
         <app-loading-state />
       } @else if (error) {

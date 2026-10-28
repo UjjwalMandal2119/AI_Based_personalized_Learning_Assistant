@@ -120,3 +120,7 @@ Backend integration tests use an in-memory H2 database in PostgreSQL compatibili
 ## DevOps learning setup
 
 See [DEVOPS.md](./DEVOPS.md) for the AWS-oriented enterprise-style repository layout and a solo practice roadmap. The infrastructure and deployment directories are scaffolding only; no AWS resources are provisioned by this repository yet.
+
+## Product wireframes
+
+See [docs/design/wireframes.md](./docs/design/wireframes.md) for the full learning flow, screen layouts, responsive behavior, and current feature mapping.

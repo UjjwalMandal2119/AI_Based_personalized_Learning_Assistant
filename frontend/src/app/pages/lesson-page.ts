@@ -11,7 +11,7 @@ import { LoadingStateComponent } from '../shared/loading-state';
   standalone: true,
   imports: [DatePipe, LowerCasePipe, RouterLink, ErrorMessageComponent, LoadingStateComponent],
   template: `
-    <main class="page-shell narrow-shell lesson-page">
+    <main class="page-shell narrow-shell lesson-page" id="main-content">
       <a class="back-link" [routerLink]="goalLink">← Back to {{ lesson?.topic ?? 'your learning goal' }}</a>
       @if (loading) {
         <app-loading-state message="Opening your saved lesson…" />

@@ -17,7 +17,7 @@ import { AuthService } from '../core/auth.service';
       </header>
     }
 
-    <main class="landing-page">
+    <main class="landing-page" id="main-content">
       <section class="landing-hero" aria-labelledby="landing-title">
         <div class="landing-copy">
           <p class="eyebrow"><span class="landing-sparkle" aria-hidden="true">✦</span> YOUR PERSONAL AI LEARNING COACH</p>

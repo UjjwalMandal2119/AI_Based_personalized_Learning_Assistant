@@ -10,7 +10,7 @@ import { ErrorMessageComponent } from '../shared/error-message';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent],
   template: `
-    <main class="page-shell narrow-shell">
+    <main class="page-shell narrow-shell" id="main-content">
       <a class="back-link" routerLink="/dashboard">← Back to your dashboard</a>
       <section class="form-card">
         <p class="eyebrow">A plan with purpose</p>

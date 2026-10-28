@@ -8,13 +8,15 @@ import { AuthService } from './core/auth.service';
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   template: `
     @if (auth.currentUser(); as user) {
+      <a class="skip-link" href="#main-content">Skip to content</a>
       <header class="app-header">
         <a class="brand" routerLink="/dashboard"><span class="brand-mark">D</span> Disha AI</a>
         <nav aria-label="Main navigation">
-          <a routerLink="/dashboard" routerLinkActive="active-link">My learning</a>
-          <a routerLink="/goals/new" routerLinkActive="active-link">New goal</a>
+          <a routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">My learning</a>
+          <a class="new-goal-link" routerLink="/goals/new" routerLinkActive="active-link">New goal</a>
         </nav>
         <div class="account-menu">
+          <span class="account-avatar" aria-hidden="true">{{ user.displayName.charAt(0).toUpperCase() }}</span>
           <span class="account-name">{{ user.displayName }}</span>
           <button class="button button-secondary button-small" type="button" (click)="logout()">Sign out</button>
         </div>

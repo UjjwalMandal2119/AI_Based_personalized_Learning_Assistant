@@ -9,7 +9,7 @@ import { ErrorMessageComponent } from '../shared/error-message';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent],
   template: `
-    <main class="auth-layout">
+    <main class="auth-layout" id="main-content">
       <section class="auth-intro">
         <a class="brand" routerLink="/login"><span class="brand-mark">D</span> Disha AI</a>
         <div>

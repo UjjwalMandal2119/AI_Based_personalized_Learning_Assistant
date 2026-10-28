@@ -14,7 +14,7 @@ import { TaskItemComponent } from '../shared/task-item';
   imports: [DatePipe, LowerCasePipe, ReactiveFormsModule, RouterLink, ErrorMessageComponent,
     LoadingStateComponent, TaskItemComponent],
   template: `
-    <main class="page-shell narrow-shell">
+    <main class="page-shell narrow-shell" id="main-content">
       <a class="back-link" routerLink="/dashboard">← Back to your dashboard</a>
       @if (loading) {
         <app-loading-state message="Opening your learning goal…" />
