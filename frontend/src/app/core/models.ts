@@ -3,6 +3,7 @@ export interface AuthResponse {
   tokenType: string;
   displayName: string;
   email: string;
+  googleLinked?: boolean;
 }
 
 export type ProficiencyLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';

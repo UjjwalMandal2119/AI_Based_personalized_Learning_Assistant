@@ -23,6 +23,9 @@ public class Student {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(name = "google_subject", unique = true, length = 255)
+    private String googleSubject;
+
     @Column(name = "display_name", nullable = false, length = 80)
     private String displayName;
 
@@ -41,6 +44,11 @@ public class Student {
     public UUID getId() { return id; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
+    public String getGoogleSubject() { return googleSubject; }
     public String getDisplayName() { return displayName; }
     public Instant getCreatedAt() { return createdAt; }
+
+    public void linkGoogleSubject(String googleSubject) {
+        this.googleSubject = googleSubject;
+    }
 }

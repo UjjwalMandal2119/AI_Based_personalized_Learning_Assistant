@@ -78,6 +78,12 @@ npm start
 
 Open `http://localhost:4200`. The frontend API URL is configured in `frontend/src/environments/environment.ts`; production builds use `environment.prod.ts`.
 
+## Configure Google sign-in
+
+Email/password registration and login remain available. To enable Google sign-in, create an OAuth 2.0 **Web application** client in Google Cloud Console. Add `http://localhost:4200` as an authorized JavaScript origin for local development. Set its client ID (not a client secret) as `GOOGLE_CLIENT_ID` in `.env` and as `googleClientId` in `frontend/src/environments/environment.ts`. For deployment, add the deployed frontend origin to Google's authorized origins, set the same ID in the backend's `GOOGLE_CLIENT_ID` runtime environment, and configure `frontend/src/environments/environment.prod.ts` before building.
+
+The frontend sends Google's ID token to the backend, which verifies its signature, issuer, audience, expiry, and verified email before issuing the app's own JWT. Google credentials are not stored in the browser or database; the database stores Google's stable subject identifier. When a Google email matches an existing email/password account, sign in with the password first and use **Account sign-in** on the dashboard to link the Google identity. Google accounts cannot be linked across different email addresses. The Google client ID is public configuration; never put a Google client secret in the frontend.
+
 ## Verify the vertical slice
 
 1. Register at `/register`, then log in at `/login`.

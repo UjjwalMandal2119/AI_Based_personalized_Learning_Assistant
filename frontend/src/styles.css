@@ -65,6 +65,8 @@ h3 { font-size: 1rem; line-height: 1.35; }
 .button-row, .form-actions { display: flex; gap: 0.7rem; align-items: center; }
 .form-actions { justify-content: flex-end; margin-top: 1.6rem; }
 .full-width { width: 100%; margin-top: 1rem; }
+.auth-divider { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; color: var(--muted); font-size: 0.85rem; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
 .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
 .dashboard-card { min-width: 0; padding: 1.35rem; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 5px 18px rgba(33, 48, 41, 0.025); }

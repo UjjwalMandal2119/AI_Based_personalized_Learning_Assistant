@@ -4,10 +4,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../core/auth.service';
 import { ErrorMessageComponent } from '../shared/error-message';
+import { GoogleSignInButtonComponent } from '../shared/google-sign-in-button';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent],
+  imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent, GoogleSignInButtonComponent],
   template: `
     <main class="auth-layout" id="main-content">
       <section class="auth-intro">
@@ -25,6 +26,10 @@ import { ErrorMessageComponent } from '../shared/error-message';
           <h2>{{ isRegister ? 'Start learning with intention.' : 'Pick up where you left off.' }}</h2>
           <p class="muted">{{ isRegister ? 'Your personal study space is a few details away.' : 'Sign in to see what’s on your learning plan.' }}</p>
           @if (error) { <app-error-message [message]="error" /> }
+          <app-google-sign-in-button
+            [text]="isRegister ? 'continue_with' : 'signin_with'"
+            (credential)="signInWithGoogle($event)" />
+          <div class="auth-divider"><span>or use email</span></div>
           <form [formGroup]="form" (ngSubmit)="submit()">
             @if (isRegister) {
               <label class="field-label" for="displayName">Your name</label>
@@ -85,6 +90,20 @@ export class AuthPage {
       next: () => void this.router.navigateByUrl('/dashboard'),
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'We could not sign you in. Check your details and try again.';
+        this.loading = false;
+      },
+      complete: () => { this.loading = false; },
+    });
+  }
+
+  signInWithGoogle(idToken: string): void {
+    if (this.loading) return;
+    this.loading = true;
+    this.error = '';
+    this.auth.loginWithGoogle(idToken).subscribe({
+      next: () => void this.router.navigateByUrl('/dashboard'),
+      error: (error: HttpErrorResponse) => {
+        this.error = error.error?.detail ?? 'Google sign-in failed. Please try again.';
         this.loading = false;
       },
       complete: () => { this.loading = false; },

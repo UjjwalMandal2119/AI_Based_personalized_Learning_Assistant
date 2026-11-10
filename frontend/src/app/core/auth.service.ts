@@ -28,6 +28,16 @@ export class AuthService {
     }).pipe(tap((response) => this.saveSession(response)));
   }
 
+  loginWithGoogle(idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/google`, { idToken })
+      .pipe(tap((response) => this.saveSession(response)));
+  }
+
+  linkGoogle(idToken: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/google/link`, { idToken })
+      .pipe(tap((response) => this.saveSession(response)));
+  }
+
   logout(): void {
     localStorage.removeItem(SESSION_KEY);
     this.userSignal.set(null);
