@@ -42,7 +42,7 @@ public class LearningLesson {
     private String difficulty;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(nullable = false, columnDefinition = "json")
     private LessonContent content;
 
     @Column(name = "estimated_study_minutes", nullable = false)

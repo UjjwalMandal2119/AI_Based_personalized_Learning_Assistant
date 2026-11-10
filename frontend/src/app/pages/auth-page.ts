@@ -1,10 +1,25 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../core/auth.service';
 import { ErrorMessageComponent } from '../shared/error-message';
 import { GoogleSignInButtonComponent } from '../shared/google-sign-in-button';
+
+export const passwordsMatchValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
+  const password = control.get('password')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+  return password === confirmPassword ? null : { passwordMismatch: true };
+};
 
 @Component({
   standalone: true,
@@ -50,6 +65,17 @@ import { GoogleSignInButtonComponent } from '../shared/google-sign-in-button';
             @if (form.controls.password.touched && form.controls.password.invalid) {
               <span class="field-error">{{ isRegister ? 'Password must be at least 8 characters.' : 'Enter your password.' }}</span>
             }
+            @if (isRegister) {
+              <label class="field-label" for="confirmPassword">Confirm password</label>
+              <input id="confirmPassword" type="password" formControlName="confirmPassword"
+                     autocomplete="new-password" placeholder="Re-enter your password">
+              @if (form.controls.confirmPassword.touched &&
+                   (form.controls.confirmPassword.invalid || form.hasError('passwordMismatch'))) {
+                <span class="field-error">
+                  {{ form.hasError('passwordMismatch') ? 'Passwords do not match.' : 'Please confirm your password.' }}
+                </span>
+              }
+            }
             <button class="button button-primary full-width" type="submit" [disabled]="form.invalid || loading">
               {{ loading ? 'Please wait…' : (isRegister ? 'Create account' : 'Sign in') }}
             </button>
@@ -74,7 +100,8 @@ export class AuthPage {
     displayName: ['', this.isRegister ? [Validators.required, Validators.maxLength(80)] : []],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
     password: ['', [Validators.required, ...(this.isRegister ? [Validators.minLength(8), Validators.maxLength(72)] : [])]],
-  });
+    confirmPassword: ['', this.isRegister ? [Validators.required] : []],
+  }, { validators: this.isRegister ? passwordsMatchValidator : null });
   loading = false;
   error = '';
 

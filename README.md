@@ -1,12 +1,12 @@
 # Disha AI — AI-Based Personalized Learning Assistant
 
-This project provides student registration/login, JWT-protected learning goals and study tasks, a personalized dashboard, and Gemini-generated lessons persisted in PostgreSQL.
+This project provides student registration/login, JWT-protected learning goals and study tasks, a personalized dashboard, and Gemini-generated lessons persisted in MySQL.
 
 ## Stack
 
 - Angular 21, standalone components, TypeScript, and Angular's Vitest-based test runner
 - Java 21 / Spring Boot 3.5, Spring Security, BCrypt, and JWT
-- PostgreSQL 17 with Flyway migrations
+- MySQL 8.4 with Flyway migrations
 - Gemini API `generateContent` with schema-constrained JSON output
 - Maven, Docker Compose, and GitHub Actions
 
@@ -19,7 +19,7 @@ The workspace was scaffolded with the installed Node 24.14 / npm 11 / Angular CL
 - Node.js 24 and npm 11
 - Docker Desktop with the Linux container engine running, plus Docker Compose
 
-## Configure and start PostgreSQL
+## Configure and start MySQL
 
 From the repository root in PowerShell:
 
@@ -35,20 +35,22 @@ Edit `.env` and replace the password and JWT placeholder. Generate a base64 JWT 
 
 Copy the output into `JWT_SECRET` in `.env`. Do not commit `.env`.
 
-Start PostgreSQL (or the PostgreSQL and backend containers together):
+Create the `learning_assistant` database and a MySQL user with privileges on that database in your local MySQL installation. Set `DB_USERNAME`, `DB_PASSWORD`, and `DB_URL` in `.env` to match your local setup. Alternatively, start the Docker Compose MySQL service (published on port 3307 by default) and set `DB_URL=jdbc:mysql://localhost:3307/learning_assistant` when running the backend directly:
 
 ```powershell
-docker compose up -d postgres
-# Optional: build and start the backend container as well
+docker compose up -d mysql
+# Or build and start the backend plus the Compose MySQL service
 docker compose up --build -d
 docker compose ps
 ```
 
-The PostgreSQL data is stored in the named `postgres_data` volume. Flyway creates the schema on the backend's first startup. Stop the services without removing data using `docker compose down`. `docker compose down -v` removes the database volume and all persisted local data.
+The Compose MySQL data is stored in the named `mysql_data` volume. Flyway creates the schema on the backend's first startup. Stop the services without removing data using `docker compose down`. `docker compose down -v` removes the Compose database volume and its data.
+
+The application now uses the MySQL-specific Flyway migrations in `backend/src/main/resources/db/migration/mysql`. The original PostgreSQL migrations are retained for history, but changing the database URL does not move existing PostgreSQL data; back up and migrate existing data separately before switching an installation.
 
 ## Run the backend locally
 
-With PostgreSQL running, load the variables from `.env` into the current PowerShell process and start Spring Boot:
+With MySQL running and the database/user created, load the variables from `.env` into the current PowerShell process and start Spring Boot:
 
 ```powershell
 Get-Content .env | Where-Object { $_ -match '^[^#]+=.*$' } | ForEach-Object {
@@ -91,10 +93,10 @@ The frontend sends Google's ID token to the backend, which verifies its signatur
 3. On the goal details page, add study tasks with optional due dates or choose **Generate study material**.
 4. The generated lesson opens with objectives, sections, worked examples, takeaways, and estimated study time. Use **Saved lessons** on the goal page to reopen persisted lessons after navigating away or refreshing.
 5. Mark a task complete from the goal page or dashboard. Dashboard counts and recent activity refresh from the API.
-6. Reload the browser and sign in again; goals, tasks, and generated lessons are stored in PostgreSQL.
+6. Reload the browser and sign in again; goals, tasks, and generated lessons are stored in MySQL.
 7. Open Swagger UI to inspect the API. Protected endpoints require the `Bearer` token returned by registration/login.
 
-All learning-goal, task, and lesson reads/updates are scoped to the authenticated student's email. Passwords are BCrypt-hashed, tokens are signed using the environment-provided JWT secret, and task completion timestamps are persisted. Lesson structured content is stored as PostgreSQL JSONB.
+All learning-goal, task, and lesson reads/updates are scoped to the authenticated student's email. Passwords are BCrypt-hashed, tokens are signed using the environment-provided JWT secret, and task completion timestamps are persisted. Lesson structured content is stored as MySQL JSON.
 
 ## Lesson API
 
