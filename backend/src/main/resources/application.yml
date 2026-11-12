@@ -33,6 +33,18 @@ gemini:
   model: ${GEMINI_MODEL:gemini-3.8-flash}
   connect-timeout: ${GEMINI_CONNECT_TIMEOUT:5s}
   response-timeout: ${GEMINI_RESPONSE_TIMEOUT:60s}
+ai:
+  provider: ollama
+  fallback:
+    enabled: ${AI_FALLBACK_ENABLED:true}
+  ollama:
+    enabled: ${OLLAMA_ENABLED:true}
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_MODEL:llama3.2:3b}
+    connect-timeout: ${OLLAMA_CONNECT_TIMEOUT:5s}
+    response-timeout: ${OLLAMA_RESPONSE_TIMEOUT:60s}
+  gemini:
+    enabled: ${AI_GEMINI_ENABLED:true}
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

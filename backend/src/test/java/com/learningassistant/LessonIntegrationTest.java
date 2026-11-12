@@ -3,6 +3,7 @@ package com.learningassistant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learningassistant.lesson.GeminiApiClient;
 import com.learningassistant.lesson.LessonContent;
+import com.learningassistant.lesson.OllamaLessonClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,11 +29,50 @@ class LessonIntegrationTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean GeminiApiClient gemini;
+    @MockitoBean OllamaLessonClient ollamaLessonClient;
+
+    @Test
+    void usesOllamaWhenAvailableAndDoesNotCallGemini() throws Exception {
+        String token = register("ollama-lesson@example.com");
+        String goalId = createGoal(token);
+        given(ollamaLessonClient.isAvailable()).willReturn(true);
+        given(ollamaLessonClient.generate(org.mockito.ArgumentMatchers.any()))
+                .willReturn(validGeneratedLesson());
+
+        mvc.perform(post("/api/learning-goals/" + goalId + "/lessons/generate")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Fractions made clear"));
+
+        // Gemini must not be called when Ollama succeeds
+        org.mockito.Mockito.verify(gemini, org.mockito.Mockito.never())
+                .generate(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void fallsBackToGeminiWhenOllamaGenerationFails() throws Exception {
+        String token = register("ollama-fail-lesson@example.com");
+        String goalId = createGoal(token);
+        given(ollamaLessonClient.isAvailable()).willReturn(true);
+        given(ollamaLessonClient.generate(org.mockito.ArgumentMatchers.any()))
+                .willThrow(new com.learningassistant.lesson.LessonGenerationException(
+                        org.springframework.http.HttpStatus.BAD_GATEWAY,
+                        "Ollama returned lesson content in an invalid format. Please try again."));
+        given(gemini.generate(org.mockito.ArgumentMatchers.any()))
+                .willReturn(validGeneratedLesson());
+
+        mvc.perform(post("/api/learning-goals/" + goalId + "/lessons/generate")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Fractions made clear"));
+    }
 
     @Test
     void generatesPersistsAndScopesLessonsToTheStudent() throws Exception {
         String token = register("lesson-student@example.com");
         String goalId = createGoal(token);
+        // Ollama unavailable — falls through to Gemini
+        given(ollamaLessonClient.isAvailable()).willReturn(false);
         given(gemini.generate(org.mockito.ArgumentMatchers.any()))
                 .willReturn(validGeneratedLesson());
 
@@ -69,6 +109,8 @@ class LessonIntegrationTest {
     void doesNotPersistMalformedGeneratedLesson() throws Exception {
         String token = register("invalid-lesson@example.com");
         String goalId = createGoal(token);
+        // Ollama unavailable — falls through to Gemini
+        given(ollamaLessonClient.isAvailable()).willReturn(false);
         given(gemini.generate(org.mockito.ArgumentMatchers.any()))
                 .willReturn(new GeminiApiClient.GeneratedLesson(
                         "Lesson title", List.of(), List.of(), List.of(), List.of(), 25));

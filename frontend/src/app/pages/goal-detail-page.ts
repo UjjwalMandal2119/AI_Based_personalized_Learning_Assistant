@@ -3,6 +3,7 @@ import { DatePipe, LowerCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
 import { LearningGoal, LearningLesson, StudyTask, TaskType } from '../core/models';
 import { LearningService } from '../core/learning.service';
 import { ErrorMessageComponent } from '../shared/error-message';
@@ -185,6 +186,7 @@ export class GoalDetailPage implements OnInit {
 
   load(): void {
     this.loading = true;
+    this.loadingLessons = true;
     this.error = '';
     this.learning.getGoal(this.goalId).subscribe({
       next: (goal) => {
@@ -193,35 +195,27 @@ export class GoalDetailPage implements OnInit {
           title: goal.title, subject: goal.subject, topic: goal.topic,
           proficiencyLevel: goal.proficiencyLevel, targetDate: goal.targetDate ?? '', status: goal.status,
         });
-        this.loadTasks();
-        this.loadLessons();
+        forkJoin({
+          tasks: this.learning.tasks(this.goalId),
+          lessons: this.learning.lessons(this.goalId),
+        }).subscribe({
+          next: ({ tasks, lessons }) => {
+            this.tasks = tasks;
+            this.lessons = lessons;
+          },
+          error: (error: HttpErrorResponse) => {
+            this.error = error.error?.detail ?? 'Study tasks or lessons could not be loaded.';
+            this.loading = false;
+            this.loadingLessons = false;
+          },
+          complete: () => { this.loading = false; this.loadingLessons = false; },
+        });
       },
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'This learning goal could not be found.';
         this.loading = false;
-      },
-    });
-  }
-
-  private loadTasks(): void {
-    this.learning.tasks(this.goalId).subscribe({
-      next: (tasks) => { this.tasks = tasks; },
-      error: (error: HttpErrorResponse) => {
-        this.error = error.error?.detail ?? 'Study tasks could not be loaded.';
-      },
-      complete: () => { this.loading = false; },
-    });
-  }
-
-  private loadLessons(): void {
-    this.loadingLessons = true;
-    this.learning.lessons(this.goalId).subscribe({
-      next: (lessons) => { this.lessons = lessons; },
-      error: (error: HttpErrorResponse) => {
-        this.lessonError = error.error?.detail ?? 'Saved lessons could not be loaded.';
         this.loadingLessons = false;
       },
-      complete: () => { this.loadingLessons = false; },
     });
   }
 
@@ -247,9 +241,9 @@ export class GoalDetailPage implements OnInit {
     this.savingTask = true;
     const value = this.taskForm.getRawValue();
     this.learning.createTask(this.goalId, { ...value, dueDate: value.dueDate || null }).subscribe({
-      next: () => {
+      next: (task) => {
+        this.tasks = [...this.tasks, task];
         this.taskForm.reset({ title: '', description: '', taskType: 'STUDY', estimatedMinutes: 25, dueDate: '' });
-        this.loadTasks();
       },
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'The task could not be added.';
@@ -260,9 +254,15 @@ export class GoalDetailPage implements OnInit {
   }
 
   toggleTask(change: { id: string; completed: boolean }): void {
+    const prev = this.tasks;
+    this.tasks = this.tasks.map((t) =>
+      t.id === change.id
+        ? { ...t, completed: change.completed, completedAt: change.completed ? new Date().toISOString() : null }
+        : t
+    );
     this.learning.setTaskCompletion(change.id, change.completed).subscribe({
-      next: () => this.loadTasks(),
       error: (error: HttpErrorResponse) => {
+        this.tasks = prev;
         this.error = error.error?.detail ?? 'The task could not be updated.';
       },
     });

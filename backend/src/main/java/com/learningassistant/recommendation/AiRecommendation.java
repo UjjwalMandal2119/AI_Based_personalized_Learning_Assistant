@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -56,6 +57,18 @@ public class AiRecommendation {
     @Column(name = "suggested_actions", nullable = false, columnDefinition = "json")
     private List<String> suggestedActions;
 
+    @Column(name = "provider_name", length = 30)
+    private String providerName;
+
+    @Column(name = "model_name", length = 80)
+    private String modelName;
+
+    @Column(name = "generation_duration_ms")
+    private Long generationDurationMs;
+
+    @Column(name = "fallback_used", nullable = false)
+    private boolean fallbackUsed;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -64,7 +77,9 @@ public class AiRecommendation {
 
     public AiRecommendation(Student student, LearningGoal learningGoal, String title,
                              String recommendation, String reason, String topic,
-                             String activityType, int estimatedMinutes, List<String> suggestedActions) {
+                             String activityType, int estimatedMinutes, List<String> suggestedActions,
+                             String providerName, String modelName, Long generationDurationMs,
+                             boolean fallbackUsed) {
         this.student = student;
         this.learningGoal = learningGoal;
         this.title = title;
@@ -74,6 +89,18 @@ public class AiRecommendation {
         this.activityType = activityType;
         this.estimatedMinutes = estimatedMinutes;
         this.suggestedActions = suggestedActions;
+        this.providerName = providerName;
+        this.modelName = modelName;
+        this.generationDurationMs = generationDurationMs;
+        this.fallbackUsed = fallbackUsed;
+        this.createdAt = Instant.now();
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public UUID getId() { return id; }
@@ -86,5 +113,9 @@ public class AiRecommendation {
     public String getActivityType() { return activityType; }
     public int getEstimatedMinutes() { return estimatedMinutes; }
     public List<String> getSuggestedActions() { return suggestedActions; }
+    public String getProviderName() { return providerName; }
+    public String getModelName() { return modelName; }
+    public Long getGenerationDurationMs() { return generationDurationMs; }
+    public boolean isFallbackUsed() { return fallbackUsed; }
     public Instant getCreatedAt() { return createdAt; }
 }

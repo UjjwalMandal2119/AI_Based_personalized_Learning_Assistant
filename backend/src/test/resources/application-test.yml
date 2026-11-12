@@ -18,3 +18,13 @@ app:
 gemini:
   api-key: test-api-key
   model: gemini-3.8-flash
+ai:
+  provider: ollama
+  fallback:
+    enabled: true
+  ollama:
+    enabled: false
+    base-url: http://localhost:11434
+    model: llama3.2:3b
+  gemini:
+    enabled: true

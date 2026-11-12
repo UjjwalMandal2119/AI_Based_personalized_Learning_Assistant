@@ -17,6 +17,8 @@ public final class AiRecommendationDtos {
             String activityType,
             int estimatedMinutes,
             List<String> suggestedActions,
+            String providerName,
+            boolean fallbackUsed,
             Instant createdAt) {
 
         public static RecommendationResponse from(AiRecommendation rec) {
@@ -25,7 +27,8 @@ public final class AiRecommendationDtos {
                     rec.getLearningGoal() != null ? rec.getLearningGoal().getId() : null,
                     rec.getTitle(), rec.getRecommendation(), rec.getReason(),
                     rec.getTopic(), rec.getActivityType(), rec.getEstimatedMinutes(),
-                    rec.getSuggestedActions(), rec.getCreatedAt());
+                    rec.getSuggestedActions(), rec.getProviderName(), rec.isFallbackUsed(),
+                    rec.getCreatedAt());
         }
     }
 

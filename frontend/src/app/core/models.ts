@@ -91,6 +91,8 @@ export interface AiRecommendation {
   activityType: string;
   estimatedMinutes: number;
   suggestedActions: string[];
+  providerName: string | null;
+  fallbackUsed: boolean;
   createdAt: string;
 }
 
