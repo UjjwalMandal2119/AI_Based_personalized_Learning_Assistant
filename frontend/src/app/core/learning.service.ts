@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Dashboard, GoalRequest, LearningGoal, LearningLesson, StudyTask, TaskRequest } from './models';
+import { AiRecommendation, Dashboard, GoalRequest, LearningGoal, LearningLesson, StudyTask, TaskRequest } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class LearningService {
@@ -51,5 +51,13 @@ export class LearningService {
 
   lesson(id: string) {
     return this.http.get<LearningLesson>(`${this.apiUrl}/lessons/${id}`);
+  }
+
+  getRecommendation() {
+    return this.http.get<AiRecommendation>(`${this.apiUrl}/ai/recommendations`);
+  }
+
+  generateRecommendation() {
+    return this.http.post<AiRecommendation>(`${this.apiUrl}/ai/recommendations/generate`, {});
   }
 }

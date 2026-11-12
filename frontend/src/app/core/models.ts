@@ -60,6 +60,7 @@ export interface Dashboard {
   tasksDueToday: StudyTask[];
   upcomingTasks: StudyTask[];
   recentActivity: StudyTask[];
+  aiRecommendation: AiRecommendation | null;
 }
 
 export interface LessonSection {
@@ -78,6 +79,19 @@ export interface LessonContent {
   sections: LessonSection[];
   examples: LessonExample[];
   keyTakeaways: string[];
+}
+
+export interface AiRecommendation {
+  id: string;
+  learningGoalId: string | null;
+  title: string;
+  recommendation: string;
+  reason: string;
+  topic: string;
+  activityType: string;
+  estimatedMinutes: number;
+  suggestedActions: string[];
+  createdAt: string;
 }
 
 export interface LearningLesson {

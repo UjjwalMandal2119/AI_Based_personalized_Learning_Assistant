@@ -4,6 +4,8 @@ import com.learningassistant.common.ResourceNotFoundException;
 import com.learningassistant.learninggoal.GoalStatus;
 import com.learningassistant.learninggoal.LearningGoalDtos;
 import com.learningassistant.learninggoal.LearningGoalRepository;
+import com.learningassistant.recommendation.AiRecommendationDtos;
+import com.learningassistant.recommendation.AiRecommendationService;
 import com.learningassistant.student.Student;
 import com.learningassistant.student.StudentRepository;
 import com.learningassistant.task.StudyTask;
@@ -22,11 +24,14 @@ public class DashboardService {
     private final StudentRepository students;
     private final LearningGoalRepository goals;
     private final StudyTaskRepository tasks;
+    private final AiRecommendationService aiRecommendations;
 
-    public DashboardService(StudentRepository students, LearningGoalRepository goals, StudyTaskRepository tasks) {
+    public DashboardService(StudentRepository students, LearningGoalRepository goals,
+                            StudyTaskRepository tasks, AiRecommendationService aiRecommendations) {
         this.students = students;
         this.goals = goals;
         this.tasks = tasks;
+        this.aiRecommendations = aiRecommendations;
     }
 
     @Transactional(readOnly = true)
@@ -35,6 +40,7 @@ public class DashboardService {
                 .orElseThrow(() -> new ResourceNotFoundException("Student"));
         List<StudyTask> allTasks = tasks.findAllByLearningGoal_Student_EmailOrderByDueDateAsc(email);
         LocalDate today = LocalDate.now();
+
         List<TaskDtos.TaskResponse> dueToday = allTasks.stream()
                 .filter(task -> !task.isCompleted() && today.equals(task.getDueDate()))
                 .map(TaskDtos.TaskResponse::from).toList();
@@ -49,11 +55,15 @@ public class DashboardService {
                 .sorted(Comparator.comparing(StudyTask::getCompletedAt).reversed())
                 .limit(5).map(TaskDtos.TaskResponse::from).toList();
 
-        return new DashboardDtos.DashboardResponse(student.getDisplayName(),
-                goals.findAllByStudent_EmailAndStatusOrderByCreatedAtDesc(email, GoalStatus.ACTIVE).stream()
-                        .map(LearningGoalDtos.GoalResponse::from).toList(),
+        AiRecommendationDtos.RecommendationResponse recommendation =
+                aiRecommendations.getLatest(email).orElse(null);
+
+        return new DashboardDtos.DashboardResponse(
+                student.getDisplayName(),
+                goals.findAllByStudent_EmailAndStatusOrderByCreatedAtDesc(email, GoalStatus.ACTIVE)
+                        .stream().map(LearningGoalDtos.GoalResponse::from).toList(),
                 allTasks.stream().filter(StudyTask::isCompleted).count(),
                 allTasks.stream().filter(task -> !task.isCompleted()).count(),
-                dueToday, upcoming, recent);
+                dueToday, upcoming, recent, recommendation);
     }
 }
