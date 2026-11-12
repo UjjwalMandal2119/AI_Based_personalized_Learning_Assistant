@@ -60,7 +60,7 @@ public class SecurityConfig {
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/google",
+                        .requestMatchers("/api/auth/register", "/api/auth/login",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())

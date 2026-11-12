@@ -1,7 +1,5 @@
 package com.learningassistant.common;
 
-import com.learningassistant.auth.GoogleVerificationUnavailableException;
-import com.learningassistant.auth.InvalidGoogleCredentialException;
 import com.learningassistant.lesson.LessonGenerationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,19 +23,6 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     ProblemDetail handleConflict(ConflictException exception) {
         return problem(HttpStatus.CONFLICT, exception.getMessage());
-    }
-
-    @ExceptionHandler(InvalidGoogleCredentialException.class)
-    ResponseEntity<ProblemDetail> handleInvalidGoogleCredential(InvalidGoogleCredentialException exception) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(problem(HttpStatus.UNAUTHORIZED, exception.getMessage()));
-    }
-
-    @ExceptionHandler(GoogleVerificationUnavailableException.class)
-    ResponseEntity<ProblemDetail> handleGoogleVerificationUnavailable(
-            GoogleVerificationUnavailableException exception) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(problem(HttpStatus.SERVICE_UNAVAILABLE, exception.getMessage()));
     }
 
     @ExceptionHandler(LessonGenerationException.class)

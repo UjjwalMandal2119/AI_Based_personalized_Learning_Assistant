@@ -2,7 +2,6 @@ package com.learningassistant;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learningassistant.auth.GoogleIdentityVerifier;
 import com.learningassistant.student.StudentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +9,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +29,6 @@ class VerticalSliceIntegrationTest {
     @Autowired ObjectMapper objectMapper;
     @Autowired StudentRepository students;
     @Autowired PasswordEncoder passwordEncoder;
-    @MockitoBean GoogleIdentityVerifier googleIdentityVerifier;
 
     @Test
     void registrationLoginGoalTasksAndDashboardStayScopedToStudent() throws Exception {
@@ -115,40 +111,6 @@ class VerticalSliceIntegrationTest {
                                 {"email":"student@example.com","password":"wrong-password"}
                                 """))
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void googleSignInCreatesAccountAndExistingPasswordAccountCanLink() throws Exception {
-        given(googleIdentityVerifier.verify("google-new-token"))
-                .willReturn(new GoogleIdentityVerifier.GoogleIdentity(
-                        "google-sub-new", "google-new@example.com", "Google Learner", true));
-        mvc.perform(post("/api/auth/google").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\":\"google-new-token\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("google-new@example.com"))
-                .andExpect(jsonPath("$.googleLinked").value(true));
-        assertThat(students.findByGoogleSubject("google-sub-new")).isPresent();
-
-        String passwordToken = register("link-me@example.com", "Existing Learner");
-        given(googleIdentityVerifier.verify("google-link-token"))
-                .willReturn(new GoogleIdentityVerifier.GoogleIdentity(
-                        "google-sub-link", "link-me@example.com", "Existing Learner", true));
-        mvc.perform(post("/api/auth/google").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\":\"google-link-token\"}"))
-                .andExpect(status().isConflict());
-        mvc.perform(post("/api/auth/google/link").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\":\"google-link-token\"}"))
-                .andExpect(status().isUnauthorized());
-        mvc.perform(post("/api/auth/google/link")
-                        .header("Authorization", "Bearer " + passwordToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\":\"google-link-token\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.googleLinked").value(true));
-        mvc.perform(post("/api/auth/google").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idToken\":\"google-link-token\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("link-me@example.com"));
     }
 
     private String register(String email, String displayName) throws Exception {

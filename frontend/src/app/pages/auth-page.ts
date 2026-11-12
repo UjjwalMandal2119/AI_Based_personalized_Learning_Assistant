@@ -11,7 +11,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../core/auth.service';
 import { ErrorMessageComponent } from '../shared/error-message';
-import { GoogleSignInButtonComponent } from '../shared/google-sign-in-button';
 
 export const passwordsMatchValidator: ValidatorFn = (
   control: AbstractControl,
@@ -23,7 +22,7 @@ export const passwordsMatchValidator: ValidatorFn = (
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent, GoogleSignInButtonComponent],
+  imports: [ReactiveFormsModule, RouterLink, ErrorMessageComponent],
   template: `
     <main class="auth-layout" id="main-content">
       <section class="auth-intro">
@@ -39,12 +38,8 @@ export const passwordsMatchValidator: ValidatorFn = (
         <div class="auth-form-wrap">
           <p class="eyebrow">{{ isRegister ? 'Create your account' : 'Welcome back' }}</p>
           <h2>{{ isRegister ? 'Start learning with intention.' : 'Pick up where you left off.' }}</h2>
-          <p class="muted">{{ isRegister ? 'Your personal study space is a few details away.' : 'Sign in to see what’s on your learning plan.' }}</p>
+          <p class="muted">{{ isRegister ? 'Your personal study space is a few details away.' : 'Sign in to see what\u2019s on your learning plan.' }}</p>
           @if (error) { <app-error-message [message]="error" /> }
-          <app-google-sign-in-button
-            [text]="isRegister ? 'continue_with' : 'signin_with'"
-            (credential)="signInWithGoogle($event)" />
-          <div class="auth-divider"><span>or use email</span></div>
           <form [formGroup]="form" (ngSubmit)="submit()">
             @if (isRegister) {
               <label class="field-label" for="displayName">Your name</label>
@@ -77,7 +72,7 @@ export const passwordsMatchValidator: ValidatorFn = (
               }
             }
             <button class="button button-primary full-width" type="submit" [disabled]="form.invalid || loading">
-              {{ loading ? 'Please wait…' : (isRegister ? 'Create account' : 'Sign in') }}
+              {{ loading ? 'Please wait\u2026' : (isRegister ? 'Create account' : 'Sign in') }}
             </button>
           </form>
           <p class="auth-switch">
@@ -117,20 +112,6 @@ export class AuthPage {
       next: () => void this.router.navigateByUrl('/dashboard'),
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'We could not sign you in. Check your details and try again.';
-        this.loading = false;
-      },
-      complete: () => { this.loading = false; },
-    });
-  }
-
-  signInWithGoogle(idToken: string): void {
-    if (this.loading) return;
-    this.loading = true;
-    this.error = '';
-    this.auth.loginWithGoogle(idToken).subscribe({
-      next: () => void this.router.navigateByUrl('/dashboard'),
-      error: (error: HttpErrorResponse) => {
-        this.error = error.error?.detail ?? 'Google sign-in failed. Please try again.';
         this.loading = false;
       },
       complete: () => { this.loading = false; },

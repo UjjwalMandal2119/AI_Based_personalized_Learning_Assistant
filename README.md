@@ -50,15 +50,13 @@ The application now uses the MySQL-specific Flyway migrations in `backend/src/ma
 
 ## Run the backend locally
 
-With MySQL running and the database/user created, load the variables from `.env` into the current PowerShell process and start Spring Boot:
+With MySQL running and the database/user created, start Spring Boot from the repository root or `backend` directory:
 
 ```powershell
-Get-Content .env | Where-Object { $_ -match '^[^#]+=.*$' } | ForEach-Object {
-  $name, $value = $_ -split '=', 2
-  [Environment]::SetEnvironmentVariable($name, $value, 'Process')
-}
 mvn -f backend\pom.xml spring-boot:run
 ```
+
+Spring Boot imports the ignored repository `.env` file from either working directory. Alternatively, set `DB_PASSWORD` and `JWT_SECRET` as environment variables in the current PowerShell process; both are required and have no insecure defaults.
 
 The API runs at `http://localhost:8080`. OpenAPI documentation is available at `http://localhost:8080/swagger-ui.html`.
 

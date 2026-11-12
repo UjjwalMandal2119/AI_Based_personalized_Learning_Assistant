@@ -8,13 +8,11 @@ import { DashboardCardComponent } from '../shared/dashboard-card';
 import { ErrorMessageComponent } from '../shared/error-message';
 import { LoadingStateComponent } from '../shared/loading-state';
 import { TaskItemComponent } from '../shared/task-item';
-import { GoogleSignInButtonComponent } from '../shared/google-sign-in-button';
-import { AuthService } from '../core/auth.service';
 
 @Component({
   standalone: true,
   imports: [DatePipe, PercentPipe, RouterLink, DashboardCardComponent,
-    ErrorMessageComponent, LoadingStateComponent, TaskItemComponent, GoogleSignInButtonComponent],
+    ErrorMessageComponent, LoadingStateComponent, TaskItemComponent],
   template: `
     <main class="page-shell" id="main-content">
       @if (loading) {
@@ -72,7 +70,7 @@ import { AuthService } from '../core/auth.service';
                 <div class="empty-state">
                   <span class="empty-icon" aria-hidden="true">✧</span>
                   <h3>Your next goal starts here</h3>
-                  <p>Choose a topic you’re curious about and make a plan.</p>
+                  <p>Choose a topic you're curious about and make a plan.</p>
                   <a class="text-link" routerLink="/goals/new">Create your first goal →</a>
                 </div>
               }
@@ -113,17 +111,6 @@ import { AuthService } from '../core/auth.service';
                 <p class="empty-line">Nothing coming up in the next week.</p>
               }
             </app-dashboard-card>
-            <app-dashboard-card title="Account sign-in">
-              @if (auth.currentUser()?.googleLinked) {
-                <p class="empty-line">Your Google account is linked.</p>
-              } @else {
-                <p class="muted">Link Google to sign in either way. Use the same email as this account.</p>
-                @if (googleLinkError) { <app-error-message [message]="googleLinkError" /> }
-                <app-google-sign-in-button
-                  text="continue_with"
-                  (credential)="linkGoogle($event)" />
-              }
-            </app-dashboard-card>
           </aside>
         </section>
       }
@@ -132,11 +119,9 @@ import { AuthService } from '../core/auth.service';
 })
 export class DashboardPage implements OnInit {
   private readonly learning = inject(LearningService);
-  readonly auth = inject(AuthService);
   dashboard: Dashboard | null = null;
   loading = true;
   error = '';
-  googleLinkError = '';
   readonly today = new Date();
 
   get progress(): number {
@@ -166,15 +151,6 @@ export class DashboardPage implements OnInit {
       next: () => this.load(),
       error: (error: HttpErrorResponse) => {
         this.error = error.error?.detail ?? 'The task could not be updated.';
-      },
-    });
-  }
-
-  linkGoogle(idToken: string): void {
-    this.googleLinkError = '';
-    this.auth.linkGoogle(idToken).subscribe({
-      error: (error: HttpErrorResponse) => {
-        this.googleLinkError = error.error?.detail ?? 'Google could not be linked. Please try again.';
       },
     });
   }
