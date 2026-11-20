@@ -108,4 +108,9 @@ public class ChatService {
         return new ChatDtos.ConversationSummary(c.getId(), c.getTitle(), c.getSubject(),
                 c.getTopic(), c.getCreatedAt(), c.getUpdatedAt(), count);
     }
+
+    Student getStudent(String email) {
+        return students.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student"));
+    }
 }

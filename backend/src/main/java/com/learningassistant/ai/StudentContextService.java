@@ -86,6 +86,7 @@ public class StudentContextService {
                         activeGoals.isEmpty() ? null : activeGoals.get(0).id(), email)
                 .stream()
                 .limit(5)
+                .map(LessonDtos.LessonResponse::from)
                 .map(this::toLessonSummary)
                 .toList();
 

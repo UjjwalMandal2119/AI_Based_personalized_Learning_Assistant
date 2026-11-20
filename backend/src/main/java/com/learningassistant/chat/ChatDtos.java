@@ -30,7 +30,7 @@ public final class ChatDtos {
 
     public record MessageResponse(UUID id, String role, String content,
                                   String providerName, String modelName, Instant createdAt) {
-        static MessageResponse from(ChatMessage m) {
+        public static MessageResponse from(ChatMessage m) {
             return new MessageResponse(m.getId(), m.getRole(), m.getContent(),
                     m.getProviderName(), m.getModelName(), m.getCreatedAt());
         }

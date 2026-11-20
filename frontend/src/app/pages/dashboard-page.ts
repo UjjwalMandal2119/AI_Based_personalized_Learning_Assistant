@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { DatePipe, LowerCasePipe, PercentPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AiRecommendation, Dashboard, StudyTask } from '../core/models';
+import { AiRecommendation, DailyBrief, Dashboard, StudyTask } from '../core/models';
 import { LearningService } from '../core/learning.service';
 import { DashboardCardComponent } from '../shared/dashboard-card';
 import { ErrorMessageComponent } from '../shared/error-message';
@@ -55,6 +55,54 @@ import { TaskItemComponent } from '../shared/task-item';
             <p class="stat-note">Across your study tasks</p>
           </app-dashboard-card>
         </section>
+
+        <!-- Daily Learning Brief -->
+        @if (dailyBrief; as brief) {
+          <section class="daily-brief" aria-label="Daily learning brief">
+            <div class="brief-header">
+              <div>
+                <p class="eyebrow">📋 Daily Learning Brief</p>
+                <h2>{{ brief.dailyObjective }}</h2>
+              </div>
+              <button class="button button-secondary button-small" (click)="refreshDailyBrief()" [disabled]="loadingBrief" aria-label="Refresh brief">
+                {{ loadingBrief ? '⟳' : '↻ Refresh' }}
+              </button>
+            </div>
+            <div class="brief-grid">
+              <div class="brief-section">
+                <h3>Focus Today</h3>
+                <p class="brief-text">{{ brief.focusSummary }}</p>
+              </div>
+              <div class="brief-section">
+                <h3>Priority Tasks</h3>
+                <p class="brief-text">{{ brief.priorityTasks }}</p>
+              </div>
+              <div class="brief-section">
+                <h3>Revision Topics</h3>
+                <p class="brief-text">{{ brief.revisionTopics }}</p>
+              </div>
+            </div>
+            @if (brief.recommendedActions?.length) {
+              <div class="brief-actions">
+                <h3>Recommended Actions</h3>
+                <ul class="action-list">
+                  @for (action of brief.recommendedActions; track $index) {
+                    <li>{{ action }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </section>
+        } @else if (!loadingBrief && dashboard && dashboard.activeGoals.length) {
+          <section class="daily-brief brief-empty" aria-label="Daily learning brief">
+            <div class="brief-inner">
+              <p class="muted">Your personalized daily brief is ready to generate.</p>
+              <button class="button button-primary" (click)="refreshDailyBrief()" [disabled]="loadingBrief">
+                {{ loadingBrief ? 'Generating…' : '✦ Generate Daily Brief' }}
+              </button>
+            </div>
+          </section>
+        }
 
         <!-- AI Coach panel (full width, above columns) -->
         @if (data.aiRecommendation; as rec) {
@@ -281,15 +329,54 @@ import { TaskItemComponent } from '../shared/task-item';
       .ai-coach-header { flex-wrap: wrap; }
       .ai-coach-refresh { margin-left: 0; }
     }
+
+    .daily-brief {
+      margin-bottom: 1.25rem;
+      border: 1px solid #e0e7e0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f7fdf7 0%, #f0f8f0 100%);
+      box-shadow: 0 8px 24px rgba(46, 125, 50, 0.06);
+    }
+    .brief-empty {
+      border-color: rgba(222, 230, 222, 0.9);
+      background: linear-gradient(135deg, #fff 0%, #fbfdf9 100%);
+    }
+    .brief-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid #e8f0e8;
+      gap: 1rem;
+    }
+    .brief-header p.eyebrow { margin: 0 0 0.25rem; font-size: 0.75rem; font-weight: 600; color: #2e7d32; text-transform: uppercase; letter-spacing: 0.5px; }
+    .brief-header h2 { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--ink, #1a1a1a); line-height: 1.4; }
+    .brief-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem; }
+    .brief-section { background: var(--surface, #fff); border-radius: 12px; padding: 1rem; border: 1px solid #e8f0e8; }
+    .brief-section h3 { margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 600; color: #2e7d32; text-transform: uppercase; letter-spacing: 0.5px; }
+    .brief-text { margin: 0; font-size: 0.88rem; line-height: 1.6; color: var(--ink, #20302a); white-space: pre-wrap; }
+    .brief-actions { padding: 0 1.5rem 1.25rem; border-top: 1px solid #e8f0e8; margin-top: 0.5rem; }
+    .brief-actions h3 { margin: 1rem 0 0.5rem; font-size: 0.85rem; font-weight: 600; color: #2e7d32; text-transform: uppercase; letter-spacing: 0.5px; }
+    .action-list { margin: 0; padding-left: 1.2rem; font-size: 0.88rem; line-height: 1.8; color: var(--ink, #20302a); }
+    .brief-empty .brief-inner { padding: 2rem 1.5rem; text-align: center; }
+    .brief-empty .brief-inner p { margin: 0 0 1rem; color: var(--muted, #666); }
+
+    @media (max-width: 680px) {
+      .ai-coach-inner { padding: 1.1rem; }
+      .ai-coach-header { flex-wrap: wrap; }
+      .ai-coach-refresh { margin-left: 0; }
+      .brief-header { flex-direction: column; align-items: stretch; }
+      .brief-header button { width: 100%; }
+      .brief-grid { grid-template-columns: 1fr; padding: 1rem; }
+    }
   `],
 })
 export class DashboardPage implements OnInit {
   private readonly learning = inject(LearningService);
   dashboard: Dashboard | null = null;
+  dailyBrief: DailyBrief | null = null;
   loading = true;
   error = '';
   recError = '';
   generatingRec = false;
+  loadingBrief = false;
   readonly today = new Date();
 
   get progress(): number {
@@ -311,6 +398,25 @@ export class DashboardPage implements OnInit {
         this.loading = false;
       },
       complete: () => { this.loading = false; },
+    });
+    this.loadDailyBrief();
+  }
+
+  loadDailyBrief(): void {
+    this.loadingBrief = true;
+    this.learning.dailyBrief().subscribe({
+      next: (brief) => { this.dailyBrief = brief; },
+      error: () => { this.dailyBrief = null; },
+      complete: () => { this.loadingBrief = false; }
+    });
+  }
+
+  refreshDailyBrief(): void {
+    this.loadingBrief = true;
+    this.learning.refreshDailyBrief().subscribe({
+      next: (brief) => { this.dailyBrief = brief; },
+      error: () => {},
+      complete: () => { this.loadingBrief = false; }
     });
   }
 

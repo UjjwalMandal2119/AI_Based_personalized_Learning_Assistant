@@ -107,3 +107,78 @@ export interface LearningLesson {
   estimatedStudyMinutes: number;
   createdAt: string;
 }
+
+export type CoachMode = 'LEARN' | 'PRACTICE' | 'QUIZ' | 'PLAN' | 'INTERVIEW' | 'IMPROVE';
+
+export interface CoachModeInfo {
+  value: CoachMode;
+  label: string;
+  description: string;
+}
+
+export interface CoachAction {
+  type: string;
+  label: string;
+  payload: string;
+}
+
+export interface CoachMetadata {
+  provider: string;
+  model: string;
+  durationMs: number;
+  fallbackUsed: boolean;
+}
+
+export interface CoachMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  providerName: string | null;
+  modelName: string | null;
+  createdAt: string;
+}
+
+export interface CoachConversation {
+  id: string;
+  title: string;
+  subject: string | null;
+  topic: string | null;
+  createdAt: string;
+  updatedAt: string;
+  messageCount: number;
+}
+
+export interface CoachConversationDetail extends CoachConversation {
+  messages: CoachMessage[];
+}
+
+export interface CoachRequest {
+  conversationId: string | null;
+  message: string;
+  mode: CoachMode;
+  history: CoachMessage[];
+}
+
+export interface CoachResponse {
+  conversationId: string;
+  reply: string;
+  mode: CoachMode;
+  suggestedQuestions: string[];
+  actions: CoachAction[];
+  metadata: CoachMetadata;
+}
+
+export interface DailyBrief {
+  id: string;
+  briefDate: string;
+  focusSummary: string;
+  priorityTasks: string;
+  revisionTopics: string;
+  dailyObjective: string;
+  recommendedActions: string[];
+  providerName: string | null;
+  modelName: string | null;
+  generationDurationMs: number | null;
+  fallbackUsed: boolean;
+  createdAt: string;
+}

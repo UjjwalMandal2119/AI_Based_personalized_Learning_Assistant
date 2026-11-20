@@ -1,1 +1,42 @@
 :host { display: block; min-height: 100vh; }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1rem;
+}
+
+.header-actions .button {
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .header-actions .button span:not(.brand-mark) {
+    display: none;
+  }
+  .header-actions .button {
+    padding: 0.5rem;
+  }
+}
+
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface, #fff);
+  border-bottom: 1px solid var(--border, #e5e5e5);
+  padding: 0.75rem 1rem;
+}
+
+.landing-header .brand { font-size: 1.25rem; }
+.landing-nav-link {
+  color: var(--ink, #1a1a1a);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.landing-nav-link:hover { background: var(--surface-alt, #f5f5f5); }
+.landing-nav-cta { margin-left: 0.5rem; }
