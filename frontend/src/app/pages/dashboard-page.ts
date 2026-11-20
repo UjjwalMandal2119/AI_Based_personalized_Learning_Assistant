@@ -73,6 +73,9 @@ import { TaskItemComponent } from '../shared/task-item';
                   {{ generatingRec ? 'Thinking…' : '↻ Refresh' }}
                 </button>
               </div>
+              @if (recError) {
+                <app-error-message [message]="recError" />
+              }
               <p class="ai-coach-body">{{ rec.recommendation }}</p>
               <p class="ai-coach-reason"><strong>Why:</strong> {{ rec.reason }}</p>
               @if (rec.suggestedActions.length) {
