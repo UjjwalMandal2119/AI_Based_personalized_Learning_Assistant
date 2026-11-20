@@ -82,7 +82,7 @@ import { TaskItemComponent } from '../shared/task-item';
                 <p class="brief-text">{{ brief.revisionTopics }}</p>
               </div>
             </div>
-            @if (brief.recommendedActions?.length) {
+            @if (brief.recommendedActions.length) {
               <div class="brief-actions">
                 <h3>Recommended Actions</h3>
                 <ul class="action-list">
